@@ -1,0 +1,10 @@
+Changelog of some thing
+=======================
+
+Unreleased ()
+------------
+
+- Some features I added.
+
+Release (2014-01-01)
+--------------------

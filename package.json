@@ -1,0 +1,28 @@
+{
+  "name": "grunt-lizard-release",
+  "version": "0.1.0",
+  "description": "Release scripts for nens/lizard-client",
+  "main": "tasks/release.js",
+  "scripts": {
+    "test": "node tests/tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nens/grunt-lizard-release.git"
+  },
+  "keywords": [
+    "git",
+    "release",
+    "grunt",
+    "lizard"
+  ],
+  "author": "fritzvd",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nens/grunt-lizard-release/issues"
+  },
+  "homepage": "https://github.com/nens/grunt-lizard-release",
+  "dependencies": {
+    "through2": "^0.6.3"
+  }
+}
