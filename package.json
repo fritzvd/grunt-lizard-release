@@ -23,6 +23,8 @@
   },
   "homepage": "https://github.com/nens/grunt-lizard-release",
   "dependencies": {
+    "promise": "^6.0.1",
+    "semver": "^4.1.0",
     "through2": "^0.6.3"
   }
 }

@@ -2,7 +2,6 @@ var test = require('tape');
 var changelog = require('../lib/changelog');
 
 
-
 var testHeader = function (line) {
   test('Change header of changelog', function (t) {
     t.plan(1);
@@ -13,11 +12,9 @@ var testHeader = function (line) {
 
 
 module.exports = function () {
-  changelog
-    .start('tests/unreleased.txt')
-    .pipe(changelog.header)
-/*    .on('data', function () {*/
-      //console.log(arguments);
-    /*});*/
-    //.pipe(changelog.header);
+  changelog.updateChangelog('tests/unreleased.txt', '0.2.3', 'tests/release.txt', function () {
+    console.log(arguments);
+  });
+
+  //testHeader(changelog.header('tests/unreleased.txt'));
 };
