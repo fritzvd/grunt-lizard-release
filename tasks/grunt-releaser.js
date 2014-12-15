@@ -1,34 +1,29 @@
 var changelog = require('../lib/changelog');
 var semver = require('semver');
-var Promise = require('promise');
+var Q = require('q');
 var shell = require('shelljs');
 
 module.exports = function (grunt) {
-  console.log('yoo hoo');
   grunt.registerTask('releaser', 'Checkout checkin, commit, changelog all the things release', 
   function (type) {
   
     var newVersion;
 
     function setup(type) {
+
       var pkg = grunt.file.readJSON('package.json');
       newVersion = pkg.version;
+      newVersion = semver.inc(pkg.version, type || 'patch');
 
-      if (options.bump) {
-        newVersion = semver.inc(pkg.version, type || 'patch');
-      }
-
-
-      return {
-        pkg: pkg
-      }
+      return pkg
     };
 
 
-    function bumpPackage (options) {
-      options.pkg.version = newVersion;
+    function bumpPackage (pkg) {
+      pkg.version = newVersion;
       grunt.file.write('package.json', JSON.stringify(
-          options.pkg, null, 2) + '\n');
+          pkg, null, 2) + '\n');
+      console.log('asdfsadf');
       return newVersion;
     };
 
@@ -68,11 +63,15 @@ module.exports = function (grunt) {
       return shell.exec('git branch -D build_branch');
     };
 
-    new Promise(setup)
+    var p = new Q()
+      .then(setup)
       .then(bumpPackage)
-      .then(function () {
+      .then(changelog, function (err){throw err})
+      .then(function () { 
+  console.log('poep');
         return changelog(newVersion, function () {
           console.log(' i haz updated changelog to: ' + newVersion);
+          return;
         });
       })
       .then(commitChanges)
@@ -84,6 +83,7 @@ module.exports = function (grunt) {
       .then(tag)
       .then(removeDist)
       .then(removeBuildBranch);
+
 
   });
 };
