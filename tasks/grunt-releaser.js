@@ -23,7 +23,6 @@ module.exports = function (grunt) {
       pkg.version = newVersion;
       grunt.file.write('package.json', JSON.stringify(
           pkg, null, 2) + '\n');
-      console.log('asdfsadf');
       return newVersion;
     };
 
@@ -67,13 +66,6 @@ module.exports = function (grunt) {
       .then(setup)
       .then(bumpPackage)
       .then(changelog, function (err){throw err})
-      .then(function () { 
-  console.log('poep');
-        return changelog(newVersion, function () {
-          console.log(' i haz updated changelog to: ' + newVersion);
-          return;
-        });
-      })
       .then(commitChanges)
       .then(newBranch)
       .then(changeGitIgnore)
