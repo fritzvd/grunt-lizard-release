@@ -1,6 +1,6 @@
 {
   "name": "grunt-lizard-release",
-  "version": "0.1.15",
+  "version": "0.1",
   "description": "Release scripts for nens/lizard-client",
   "main": "tasks/release.js",
   "scripts": {
