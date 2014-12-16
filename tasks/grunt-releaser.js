@@ -83,7 +83,6 @@ module.exports = function (grunt) {
       .then(removeDist)
       .then(goBackToBranch)
       .then(removeBuildBranch)
-      .then(changeGitIgnoreBack)
       .done(done);
       
   });
