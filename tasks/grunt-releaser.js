@@ -77,14 +77,7 @@ module.exports = function (grunt) {
       .then(checkoutDist)
       .then(tag)
       .then(removeDist)
-      .then(removeBuildBranch);
-
-     var deferred = Q.defer();
-      changelog({
-        release: '1.2.3',
-        deferred: deferred
-      })
-      .then(commitChanges)
+      .then(removeBuildBranch)
       .done(done);
       
   });
