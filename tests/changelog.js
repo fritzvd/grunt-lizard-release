@@ -13,6 +13,6 @@ var testHeader = function (line) {
 
 
 module.exports = function () {
-  changelog.updateChangelog('tests/unreleased.txt',
-      '0.2.3', 'tests/release.txt', testHeader);
+    changelog('0.2.3', 'tests/unreleased.txt',
+      'tests/release.txt', testHeader);
 };

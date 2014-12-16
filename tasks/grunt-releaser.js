@@ -27,7 +27,8 @@ module.exports = function (grunt) {
     };
 
     function commitChanges () {
-      return shell.exec('git commit -am "Changed package.json and changelog to ' + newVersion +' "', {silent:false})
+      console.log('committing');
+      //return shell.exec('git commit -am "Changed package.json and changelog to ' + newVersion +' "', {silent:false})
     };
 
     function newBranch () {
@@ -65,17 +66,18 @@ module.exports = function (grunt) {
     var p = new Q()
       .then(setup)
       .then(bumpPackage)
-      .then(changelog, function (err){throw err})
-      .then(commitChanges)
-      .then(newBranch)
-      .then(changeGitIgnore)
-      .then(addDist)
-      .then(subTreePush)
-      .then(checkoutDist)
-      .then(tag)
-      .then(removeDist)
-      .then(removeBuildBranch);
-
-
+      .then(function (version) {
+        changelog(version)
+          .then(commitChanges);
+          .then(newBranch)
+          .then(changeGitIgnore)
+          .then(addDist)
+          .then(subTreePush)
+          .then(checkoutDist)
+          .then(tag)
+          .then(removeDist)
+          .then(removeBuildBranch);
+      })
+      
   });
 };
