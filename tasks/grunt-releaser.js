@@ -61,6 +61,10 @@ module.exports = function (grunt) {
       return shell.exec('git push origin :dist --tags');
     }
 
+    function goBackToBranch () {
+      return shell.exec('git checkout integration');
+    }
+
     function removeBuildBranch () {
       return shell.exec('git branch -D build_branch');
     };
@@ -77,6 +81,7 @@ module.exports = function (grunt) {
       .then(checkoutDist)
       .then(tag)
       .then(removeDist)
+      .then(goBackToBranch)
       .then(removeBuildBranch)
       .done(done);
       
