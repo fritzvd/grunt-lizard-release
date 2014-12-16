@@ -69,6 +69,10 @@ module.exports = function (grunt) {
       return shell.exec('git branch -D build_branch');
     };
 
+    function changeGitIgnoreBack () {
+      return shell.exec('mv .gitignore .devignore');
+    }
+
     var p = new Q()
       .then(setup)
       .then(bumpPackage)
@@ -83,6 +87,7 @@ module.exports = function (grunt) {
       .then(removeDist)
       .then(goBackToBranch)
       .then(removeBuildBranch)
+      .then(changeGitIgnoreBack)
       .done(done);
       
   });
