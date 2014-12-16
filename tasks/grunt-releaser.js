@@ -28,7 +28,7 @@ module.exports = function (grunt) {
 
     function commitChanges () {
       console.log('committing');
-      //return shell.exec('git commit -am "Changed package.json and changelog to ' + newVersion +' "', {silent:false})
+      return shell.exec('git commit -am "Changed package.json and changelog to ' + newVersion +' "', {silent:false})
     };
 
     function newBranch () {
