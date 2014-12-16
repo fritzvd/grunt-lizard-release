@@ -68,7 +68,7 @@ module.exports = function (grunt) {
       .then(bumpPackage)
       .then(function (version) {
         changelog(version)
-          .then(commitChanges);
+          .then(commitChanges)
           .then(newBranch)
           .then(changeGitIgnore)
           .then(addDist)
