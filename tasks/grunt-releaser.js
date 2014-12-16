@@ -54,7 +54,7 @@ module.exports = function (grunt) {
     }
 
     function checkoutDist () {
-      return shell.exec('git checkout dist');
+      return shell.exec('git checkout origin/dist');
     };
 
     function tag () {
