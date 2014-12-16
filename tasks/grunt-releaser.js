@@ -54,7 +54,7 @@ module.exports = function (grunt) {
     };
 
     function tag () {
-      return shell.exec('git tag ' + newVersion);
+      return shell.exec('git tag -a ' + newVersion + ' -m "New Release: ' + newVersion +'"');
     }
 
     function removeDist () {
@@ -68,10 +68,6 @@ module.exports = function (grunt) {
     function removeBuildBranch () {
       return shell.exec('git branch -D build_branch');
     };
-
-    function changeGitIgnoreBack () {
-      return shell.exec('mv .gitignore .devignore');
-    }
 
     var p = new Q()
       .then(setup)
