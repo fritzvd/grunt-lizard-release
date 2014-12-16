@@ -45,6 +45,10 @@ module.exports = function (grunt) {
       return shell.exec('git add dist/');
     }
 
+    function commitDist () {
+      return shell.exec('git commit -am "Releasing with Dist: '+ newVersion +' "')
+    }
+
     function subTreePush () {
       return shell.exec('git subtree push --prefix dist/ origin dist');
     }
@@ -77,6 +81,7 @@ module.exports = function (grunt) {
       .then(newBranch)
       .then(changeGitIgnore)
       .then(addDist)
+      .then(commitDist)
       .then(subTreePush)
       .then(checkoutDist)
       .then(tag)
