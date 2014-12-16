@@ -6,6 +6,8 @@ var shell = require('shelljs');
 module.exports = function (grunt) {
   grunt.registerTask('releaser', 'Checkout checkin, commit, changelog all the things release', 
   function (type) {
+
+    var done = this.async();
   
     var newVersion;
 
@@ -66,18 +68,24 @@ module.exports = function (grunt) {
     var p = new Q()
       .then(setup)
       .then(bumpPackage)
-      .then(function (version) {
-        changelog(version)
-          .then(commitChanges)
-          .then(newBranch)
-          .then(changeGitIgnore)
-          .then(addDist)
-          .then(subTreePush)
-          .then(checkoutDist)
-          .then(tag)
-          .then(removeDist)
-          .then(removeBuildBranch);
+      .then(changelog)
+      .then(commitChanges)
+      .then(newBranch)
+      .then(changeGitIgnore)
+      .then(addDist)
+      .then(subTreePush)
+      .then(checkoutDist)
+      .then(tag)
+      .then(removeDist)
+      .then(removeBuildBranch);
+
+     var deferred = Q.defer();
+      changelog({
+        release: '1.2.3',
+        deferred: deferred
       })
+      .then(commitChanges)
+      .done(done);
       
   });
 };
