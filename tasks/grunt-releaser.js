@@ -17,61 +17,67 @@ module.exports = function (grunt) {
       newVersion = pkg.version;
       newVersion = semver.inc(pkg.version, type || 'patch');
 
-      return pkg
-    };
+      return pkg;
+    }
 
 
-    function bumpPackage (pkg) {
+    function bumpPackage(pkg) {
       pkg.version = newVersion;
       grunt.file.write('package.json', JSON.stringify(
           pkg, null, 2) + '\n');
+
+      var bowerPkg = grunt.file.readJSON('bower.json');
+      bowerPkg.version = newVersion;
+      grunt.file.write('bower.json', JSON.stringify(
+          pkg, null, 2) + '\n');
+
       return newVersion;
-    };
+    }
 
-    function commitChanges () {
+    function commitChanges() {
       console.log('committing');
-      return shell.exec('git commit -am "Changed package.json and changelog to ' + newVersion +' "', {silent:false})
-    };
+      return shell.exec('git commit -am "Changed package.json and changelog to ' + newVersion + ' "', {silent: false})
+    }
 
-    function newBranch () {
+    function newBranch() {
       return shell.exec('git checkout -b build_branch');
-    };
+    }
 
-    function changeGitIgnore () {
+    function changeGitIgnore() {
       return shell.exec('mv .buildignore .gitignore');
-    };
+    }
 
-    function addDist () {
+    function addDist() {
       return shell.exec('git add dist/');
     }
 
-    function commitDist () {
-      return shell.exec('git commit -am "Releasing with Dist: '+ newVersion +' "')
+    function commitDist() {
+      return shell.exec('git commit -am "Releasing with Dist: ' + newVersion + ' "');
     }
 
-    function subTreePush () {
+    function subTreePush() {
       return shell.exec('git subtree push --prefix dist/ origin dist');
     }
 
-    function checkoutDist () {
+    function checkoutDist() {
       return shell.exec('git checkout origin/dist');
-    };
-
-    function tag () {
-      return shell.exec('git tag -a ' + newVersion + ' -m "New Release: ' + newVersion +'"');
     }
 
-    function removeDist () {
+    function tag() {
+      return shell.exec('git tag -a ' + newVersion + ' -m "New Release: ' + newVersion + '"');
+    }
+
+    function removeDist() {
       return shell.exec('git push origin :dist --tags');
     }
 
-    function goBackToBranch () {
+    function goBackToBranch() {
       return shell.exec('git checkout integration');
     }
 
-    function removeBuildBranch () {
+    function removeBuildBranch() {
       return shell.exec('git branch -D build_branch');
-    };
+    }
 
     var p = new Q()
       .then(setup)
