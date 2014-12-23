@@ -29,7 +29,7 @@ module.exports = function (grunt) {
       var bowerPkg = grunt.file.readJSON('bower.json');
       bowerPkg.version = newVersion;
       grunt.file.write('bower.json', JSON.stringify(
-          pkg, null, 2) + '\n');
+          bowerPkg, null, 2) + '\n');
 
       return newVersion;
     }
