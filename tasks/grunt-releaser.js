@@ -2,24 +2,37 @@ var changelog = require('../lib/changelog');
 var semver = require('semver');
 var Q = require('q');
 var shell = require('shelljs');
+var git = require('git-rev');
 
 module.exports = function (grunt) {
-  grunt.registerTask('releaser', 'Checkout checkin, commit, changelog all the things release', 
+  grunt.registerTask(
+    'releaser', 'Checkout checkin, commit, changelog all the things release',
   function (type) {
 
     var done = this.async();
   
-    var newVersion;
+    var newVersion, newDevVersion, currentBranch;
 
-    function setup(type) {
+    function getCurrentBranch(type) {
+      var prom = Q.defer();
+
+      git.branch(function (s) {
+        prom.resolve({'currentBranch': s, 'type': type});
+      });
+
+      return prom.promise;
+    }
+
+    function setup(obj) {
 
       var pkg = grunt.file.readJSON('package.json');
       newVersion = pkg.version;
-      newVersion = semver.inc(pkg.version, type || 'patch');
+      newVersion = semver.inc(pkg.version, obj.type || 'patch');
+      newDevVersion = newVersion + 'dev';
+      currentBranch = obj.currentBranch;
 
       return pkg;
     }
-
 
     function bumpPackage(pkg) {
       pkg.version = newVersion;
@@ -36,7 +49,11 @@ module.exports = function (grunt) {
 
     function commitChanges() {
       console.log('committing');
-      return shell.exec('git commit -am "Changed package.json and changelog to ' + newVersion + ' "', {silent: false})
+      return shell.exec(
+        'git commit -am "Changed package.json and changelog to ' +
+        newVersion +
+        ' "', {silent: false}
+      );
     }
 
     function newBranch() {
@@ -52,7 +69,8 @@ module.exports = function (grunt) {
     }
 
     function commitDist() {
-      return shell.exec('git commit -am "Releasing with Dist: ' + newVersion + ' "');
+      return shell.exec(
+        'git commit -am "Releasing with Dist: ' + newVersion + ' "');
     }
 
     function subTreePush() {
@@ -63,8 +81,20 @@ module.exports = function (grunt) {
       return shell.exec('git checkout origin/dist');
     }
 
+    function devTag() {
+      return shell.exec(
+        'git tag -a ' + newDevVersion +
+        ' -m "New Release: ' + newDevVersion + '"');
+    }
+
+    function mergeDevTag() {
+      return shell.exec('git merge ' + currentBranch + ' build_branch');
+    }
+
+
     function tag() {
-      return shell.exec('git tag -a ' + newVersion + ' -m "New Release: ' + newVersion + '"');
+      return shell.exec(
+        'git tag -a ' + newVersion + ' -m "New Release: ' + newVersion + '"');
     }
 
     function removeDist() {
@@ -72,7 +102,7 @@ module.exports = function (grunt) {
     }
 
     function goBackToBranch() {
-      return shell.exec('git checkout integration');
+      return shell.exec('git checkout ' + currentBranch);
     }
 
     function removeBuildBranch() {
@@ -80,10 +110,13 @@ module.exports = function (grunt) {
     }
 
     var p = new Q()
+      .then(getCurrentBranch)
       .then(setup)
       .then(bumpPackage)
       .then(changelog)
       .then(commitChanges)
+      .then(devTag)
+      .then(mergeDevTag)
       .then(newBranch)
       .then(changeGitIgnore)
       .then(addDist)

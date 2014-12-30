@@ -1,6 +1,6 @@
 {
   "name": "grunt-lizard-release",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Release scripts for nens/lizard-client",
   "main": "tasks/release.js",
   "scripts": {
@@ -23,6 +23,7 @@
   },
   "homepage": "https://github.com/nens/grunt-lizard-release",
   "dependencies": {
+    "git-rev": "^0.2.1",
     "q": "^1.1.2",
     "semver": "^4.1.0",
     "shelljs": "^0.3.0"
