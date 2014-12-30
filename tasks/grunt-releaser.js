@@ -87,6 +87,11 @@ module.exports = function (grunt) {
         ' -m "New Release: ' + newDevVersion + '"');
     }
 
+    function mergeDevTag() {
+      return shell.exec('git merge ' + currentBranch + ' build_branch');
+    }
+
+
     function tag() {
       return shell.exec(
         'git tag -a ' + newVersion + ' -m "New Release: ' + newVersion + '"');
@@ -110,11 +115,12 @@ module.exports = function (grunt) {
       .then(bumpPackage)
       .then(changelog)
       .then(commitChanges)
+      .then(devTag)
+      .then(mergeDevTag)
       .then(newBranch)
       .then(changeGitIgnore)
       .then(addDist)
       .then(commitDist)
-      .then(devTag)
       .then(subTreePush)
       .then(checkoutDist)
       .then(tag)
