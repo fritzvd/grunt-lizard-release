@@ -13,19 +13,26 @@ module.exports = function (grunt) {
   
     var newVersion, newDevVersion, currentBranch;
 
-    function setup(type) {
+    function getCurrentBranch(type) {
+      var prom = Q.defer();
+
+      git.branch(function (s) {
+        prom.resolve({'currentBranch': s, 'type': type});
+      });
+
+      return prom.promise;
+    }
+
+    function setup(obj) {
 
       var pkg = grunt.file.readJSON('package.json');
       newVersion = pkg.version;
-      newVersion = semver.inc(pkg.version, type || 'patch');
+      newVersion = semver.inc(pkg.version, obj.type || 'patch');
       newDevVersion = newVersion + 'dev';
-
-      currentBranch = git.branch(function (s) {return s; });
-      console.log(currentBranch, newDevVersion);
+      currentBranch = obj.currentBranch;
 
       return pkg;
     }
-
 
     function bumpPackage(pkg) {
       pkg.version = newVersion;
@@ -98,6 +105,7 @@ module.exports = function (grunt) {
     }
 
     var p = new Q()
+      .then(getCurrentBranch)
       .then(setup)
       .then(bumpPackage)
       .then(changelog)
