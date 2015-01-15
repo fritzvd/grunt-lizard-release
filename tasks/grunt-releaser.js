@@ -5,9 +5,11 @@ var shell = require('shelljs');
 var git = require('git-rev');
 
 module.exports = function (grunt) {
-  grunt.registerTask(
+  grunt.registerMultiTask(
     'releaser', 'Checkout checkin, commit, changelog all the things release',
   function (type) {
+
+    var options = this.options();
 
     var done = this.async();
   
@@ -74,11 +76,14 @@ module.exports = function (grunt) {
     }
 
     function subTreePush() {
-      return shell.exec('git subtree push --prefix dist/ origin dist');
+      if (options.upstream === 'gh-pages') {
+        shell.exec("git push origin :gh-pages --force")
+      } 
+      return shell.exec('git subtree push --prefix dist/ origin ' + options.upstream); 
     }
 
     function checkoutDist() {
-      return shell.exec('git checkout origin/dist');
+      return shell.exec('git checkout origin/' + options.upstream);
     }
 
     function devTag() {
@@ -113,21 +118,38 @@ module.exports = function (grunt) {
       .then(getCurrentBranch)
       .then(setup)
       .then(bumpPackage)
-      .then(changelog)
-      .then(commitChanges)
-      .then(devTag)
-      .then(mergeDevTag)
-      .then(newBranch)
+      .then(function () {
+        if (options.changelog) {
+          return changelog();
+        } else {
+          return;
+        }
+      })
+      .then(commitChanges);
+
+    if (options.tag) {
+      p.then(devTag)
+      .then(mergeDevTag);
+    }
+
+     p.then(newBranch)
       .then(changeGitIgnore)
       .then(addDist)
       .then(commitDist)
-      .then(subTreePush)
-      .then(checkoutDist)
+      .then(subTreePush);
+
+    if (options.tag) {
+      p.then(checkoutDist)
       .then(tag)
       .then(removeDist)
       .then(goBackToBranch)
       .then(removeBuildBranch)
+      .done(done);      
+    } else {
+      p.then(goBackToBranch)
+      .then(removeBuildBranch)
       .done(done);
+    }
       
   });
 };
