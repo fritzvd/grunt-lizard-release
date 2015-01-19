@@ -114,42 +114,37 @@ module.exports = function (grunt) {
       return shell.exec('git branch -D build_branch');
     }
 
-    var p = new Q()
-      .then(getCurrentBranch)
+    var p = new Q();
+    if (options.tag && options.changelog) {
+      p.then(getCurrentBranch)
+       .then(setup)
+       .then(bumpPackage)
+       .then(changelog)
+       .then(commitChanges)
+       .then(devTag)
+       .then(mergeDevTag)
+       .then(newBranch)
+       .then(changeGitIgnore)
+       .then(addDist)
+       .then(commitDist)
+       .then(subTreePush)
+       .then(checkoutDist)
+       .then(tag)
+       .then(removeDist)
+       .then(goBackToBranch)
+       .then(removeBuildBranch)
+       .done(done);
+    } else {
+      p.then(getCurrentBranch)
       .then(setup)
-      .then(bumpPackage)
-      .then(function (version) {
-        if (options.changelog) {
-          return changelog(version);
-        } else {
-          return;
-        }
-      })
-      .then(commitChanges);
-
-    if (options.tag) {
-      p.then(devTag)
-      .then(mergeDevTag);
-    }
-
-     p.then(newBranch)
+      .then(newBranch)
       .then(changeGitIgnore)
       .then(addDist)
       .then(commitDist)
-      .then(subTreePush);
-
-    if (options.tag) {
-      p.then(checkoutDist)
-      .then(tag)
-      .then(removeDist)
+      .then(subTreePush)
       .then(goBackToBranch)
-      .then(removeBuildBranch)
-      .done(done);      
-    } else {
-      p.then(goBackToBranch)
       .then(removeBuildBranch)
       .done(done);
     }
-      
   });
 };
