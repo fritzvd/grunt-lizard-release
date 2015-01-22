@@ -77,7 +77,7 @@ module.exports = function (grunt) {
 
     function subTreePush() {
       if (options.upstream === 'gh-pages') {
-        return shell.exec("git push origin :gh-pages --force")
+        shell.exec("git push origin :gh-pages --force")
       } 
       return shell.exec('git subtree push --prefix dist/ origin ' + options.upstream); 
     }
